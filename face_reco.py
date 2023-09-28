@@ -2,9 +2,10 @@ import cv2
 import numpy as np
 import face_recognition
 import os
-
+from datetime import datetime
 path = 'images'
 images = []
+
 classnames = []
 mylist = os.listdir(path)
 
@@ -20,6 +21,20 @@ def findEncodings(images):
         encode=face_recognition.face_encodings(img)[0]
         encodelist.append(encode)
     return encodelist
+def markAttendence(name):
+    print(name)
+    with open('attendence.csv','r+') as f:
+        myDatalist = f.readlines()
+        print(myDatalist)
+        nameList = []
+        for line in myDatalist:
+            entry = line.split(',')
+            nameList.append(entry[0])
+        if name not in nameList:
+            now = datetime.now()
+            dateString = now.strftime('%H:%M:%S')
+            print('hello')
+            f.writelines(f'\n{name},{dateString}')
 
 encodelistknown = findEncodings(images)
 print(len('Encoding Complete'))
@@ -48,11 +63,7 @@ while True:
             cv2.rectangle(img,(x1,y1),(x2,y2),(0,255,0,2))
             cv2.rectangle(img,(x1,y2-35),(x2,y2),(0,255,0,cv2.FILLED))
             cv2.putText(img,name,(x1+6,y2-6),cv2.FONT_HERSHEY_COMPLEX,1,(255,255,255),2)
+            markAttendence(name)
 
     cv2.imshow('webcam',img)
     cv2.waitKey(1)
-
-""" imgElon = face_recognition.load_image_file('images/musk1.jpeg')
-imgElon = cv2.cvtColor(imgElon,cv2.COLOR_BGR2RGB)
-imgElon2 = face_recognition.load_image_file('images/vijay.jpg')
-imgElon2 = cv2.cvtColor(imgElon2,cv2.COLOR_BGR2RGB) """
